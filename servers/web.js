@@ -59,6 +59,10 @@ if (config.enableCompress) {
 app.use(conditional());
 app.use(etag());
 
+for (const middleware of config.customWebMiddlewares) {
+  app.use(middleware(app));
+}
+
 var viewDir = config.viewDir || path.join(rootdir, 'view', 'web');
 var docDir = path.join(rootdir, 'docs', 'web');
 

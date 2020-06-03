@@ -2,6 +2,7 @@
 
 var request = require('supertest');
 var mm = require('mm');
+var assert = require('assert');
 var app = require('../../../../servers/web');
 var registry = require('../../../../servers/registry');
 var config = require('../../../../config');
@@ -29,6 +30,18 @@ describe('test/controllers/web/package/list_privates.test.js', function () {
   });
 
   describe('GET /privates', function () {
+    it('should use costomized registry middleware', done => {
+      request(app)
+        .get('/privates')
+        .expect(/Private packages in @cnpm/)
+        .expect(/@cnpm\/testmodule\-web\-list_privates/)
+        .expect(200, function(err, res) {
+          assert(!err);
+          assert(res.headers['x-custom-middleware'] === 'true');
+          done();
+        });
+    });
+
     it('should response no private packages', function (done) {
       mm(config, 'scopes', ['@not-exists-scope-name']);
       request(app)
